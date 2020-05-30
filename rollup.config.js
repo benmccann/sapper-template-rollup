@@ -1,6 +1,9 @@
+import path from 'path';
+import alias from '@rollup/plugin-alias';
 import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
 import commonjs from '@rollup/plugin-commonjs';
+import url from '@rollup/plugin-url';
 import svelte from 'rollup-plugin-svelte';
 import babel from '@rollup/plugin-babel';
 import { terser } from 'rollup-plugin-terser';
@@ -18,9 +21,18 @@ export default {
 		input: config.client.input(),
 		output: config.client.output(),
 		plugins: [
+			alias({
+				entries: [
+					{ find: 'static', replacement: path.resolve(__dirname, 'static') },
+				]
+			}),
 			replace({
 				'process.browser': true,
 				'process.env.NODE_ENV': JSON.stringify(mode)
+			}),
+			url({
+				fileName: '[dirname][name]-[hash][extname]',
+				publicPath: '/client/'
 			}),
 			svelte({
 				dev,
@@ -63,6 +75,11 @@ export default {
 		input: config.server.input(),
 		output: config.server.output(),
 		plugins: [
+			alias({
+				entries: [
+					{ find: 'static', replacement: path.resolve(__dirname, 'static') },
+				]
+			}),
 			replace({
 				'process.browser': false,
 				'process.env.NODE_ENV': JSON.stringify(mode)
@@ -70,6 +87,11 @@ export default {
 			svelte({
 				generate: 'ssr',
 				dev
+			}),
+			url({
+				fileName: '[dirname][name]-[hash][extname]',
+				publicPath: '/client/',
+				emitFiles: false // already emitted by client build
 			}),
 			resolve({
 				dedupe: ['svelte']
