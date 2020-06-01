@@ -1,5 +1,5 @@
 <script>
-	import successkid from 'static/successkid.jpg';
+	import successkid from '../../static/successkid.jpg';
 </script>
 
 <style>
